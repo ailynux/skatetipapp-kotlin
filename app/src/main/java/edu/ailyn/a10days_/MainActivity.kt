@@ -1,12 +1,29 @@
 package edu.ailyn.a10days_
-//AILYN DIAZ AIMS.EDU PROJECT I MADE FOR CLASS 3/26/24
+
+//AILYN DIAZ AIMS.EDU PROJECT I MADE FOR CLASS 3/23/24
+// 10 - Days Assignment
+// Kotlin / Android
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.LinearOutSlowInEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.slideInVertically
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.Surface
@@ -19,91 +36,102 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview // Importing Preview annotation
+import androidx.compose.ui.tooling.preview.Preview
 import edu.ailyn.a10days_.ui.theme._10days_Theme
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 
-// Define a data class to represent a skateboarding tip
+//data class to represent a skateboarding tip
 data class SkateboardingTip(
     val title: String,
     val description: String,
-    val imageUrl: Int // Resource ID for the image
+    val imageUrl: Int, // Resource ID for image
+    val dayNumber: Int
 )
 
-// Sample list of skateboarding tips
+// list of skateboarding tips
 val skateboardingTips = listOf(
-    //1
     SkateboardingTip(
         "Mastering the Ollie",
         "The ollie is the fundamental trick in skateboarding. " +
                 "Learn how to pop your board and slide your front foot to level out in mid-air.",
-        R.drawable.ollie
+        R.drawable.ollie,
+        1 // Day 1
     ),
-    //2
     SkateboardingTip(
         "Spot Finder",
         "Discover skate spots in your area and around the world, including skate parks, street spots, DIY spots, and hidden gems. ",
-        R.drawable.skatepark
+        R.drawable.skatepark,
+        2 // Day 2
     ),
-    //3
     SkateboardingTip(
-        "Choosing the Right Skate Shoes",
+        "Pick the Right Skate Shoes",
         "Skate shoes play a crucial role in your performance and safety. " +
                 "Look for durable materials, good grip, and ankle support.",
-        R.drawable.shoes
+        R.drawable.shoes,
+        3 // Day 3
     ),
-    //4
     SkateboardingTip(
         "Skateboard Setup Guides",
         "Setting up your skateboard correctly is essential for optimal performance and safety. " +
-                "Make sure to choose the right components, including durable materials for your deck. ",
-        R.drawable.sitdown
+                "Make sure that what you end up choosing is what you love and enjoy. ",
+        R.drawable.sitdown,
+        4 // Day 4
     ),
-    //5
     SkateboardingTip(
         "Skateboarding Culture & History",
-        "Dive into the rich culture and history of skateboarding with articles, interviews, documentaries, and archival footage celebrating iconic skaters, legendary tricks, and influential skate brands. ",
-        R.drawable.riding
+        "Surfers in California wanted to replicate the feeling of riding waves on land, so they began experimenting. These \"sidewalk surfers\" let riders mimic surfing movements on the streets.",
+        R.drawable.riding,
+        5 // Day 5
     ),
-    //6
     SkateboardingTip(
         "Safety & Injury Prevention",
-        "Access resources and tips for skateboarding safety, injury prevention, warm-up exercises, and first aid techniques. " +
-                "Learn how to skate responsibly and minimize the risk of accidents.",
-        R.drawable.gear
+        "Learn skateboarding safety, injury prevention, warm-up exercises, and first aid techniques. " +
+                "To skate responsibly and minimize the risk of accidents.",
+        R.drawable.gear,
+        6 // Day 6
     ),
-    //7
     SkateboardingTip(
         "Skateboarding Dictionary",
-        "Brush up on skateboarding terminology with a comprehensive dictionary of tricks, slang, and jargon used in the skateboarding community.  ",
-        R.drawable.chitchat
+        "Brush up on skateboarding terminology with some of the jargon used here's a few things for the day; Pop, Manual, Fakie, and Switch.",
+        R.drawable.chitchat,
+        7 // Day 7
     ),
-    //8
     SkateboardingTip(
-        "Basic Skateboarding Stance",
+        "Skate Stance",
         "Mastering your skateboarding stance is the first step in learning to skate. " +
-                "Whether you're regular or goofy, find your most comfortable position on the board.",
-        R.drawable.standhold
+                "Find out if you're regular or goofy, find your most comfortable position on the board.",
+        R.drawable.standhold,
+        8 // Day 8
     ),
-    //9
     SkateboardingTip(
         "Dropping In",
-        "Dropping in is a fundamental skill for riding ramps and bowls. " +
-                "Learn the proper technique for dropping in safely and confidently.",
-        R.drawable.dropin
+        "A very fundamental skill for riding ramps and bowls. " +
+                "The proper technique for dropping in safely and confidently is to start small then have fun movin' up!.",
+        R.drawable.dropin,
+        9 // Day 9
     ),
-    //10
     SkateboardingTip(
         "Flip Tricks",
         "Flip tricks are advanced maneuvers that involve flipping and spinning the board. " +
-                "Start with basic flip tricks like kickflips and heelflips before progressing to harder tricks.",
-        R.drawable.kickflip
-    ),
-    // Add more skateboarding tips as needed
+                "Start with basic flip tricks like kickflips and heelflips. Knowing the Ollie is almost crucial.",
+        R.drawable.kickflip,
+        10 // Day 10
+    )
 )
 
 class MainActivity : ComponentActivity() {
@@ -113,7 +141,7 @@ class MainActivity : ComponentActivity() {
             _10days_Theme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = Color.Black // Set background color to black for a sleek look
+                    color = Color.DarkGray
                 ) {
                     Column(
                         modifier = Modifier
@@ -125,18 +153,35 @@ class MainActivity : ComponentActivity() {
                         HeaderImage()
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "10 Days of Skateboarding Tips",
+                            text = "10 DAYS OF SKATEBOARDING TIPS",
                             fontSize = 25.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.White // Set text color to white for contrast
+                            color = Color.White,
+                            letterSpacing = 1.5.sp,
+                            fontFamily = FontFamily.Monospace,
+                            modifier = Modifier.padding(vertical = 16.dp)
                         )
-                        Spacer(modifier = Modifier.height(16.dp))
+
                         Text(
-                            text = "Whether you're a seasoned skater or just getting started, this app is designed to inspire & educate skateboarders worldwide.",
+                            text = "If you're a seasoned skater or just getting started, this app is designed to inspire & educate all skateboarders worldwide.",
                             fontSize = 15.sp,
-                            color = Color.Gray, // Set text color to gray for subtlety
-                            textAlign = TextAlign.Center
+                            color = Color.Black,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp)
+                                .background(
+                                    brush = Brush.horizontalGradient(
+                                        colors = listOf(Color.Cyan, Color.Yellow)
+                                    )
+                                )
+                                .padding(vertical = 8.dp, horizontal = 16.dp)
+                                .shadow(
+                                    elevation = 4.dp,
+                                    shape = MaterialTheme.shapes.medium,
+
+                                )
                         )
+
                         Spacer(modifier = Modifier.height(32.dp))
                         SkateboardingTipsList(skateboardingTips)
                     }
@@ -148,49 +193,83 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun HeaderImage() {
-    Image(
-        painter = painterResource(id = R.drawable.groupskaterkids), // Add your header image resource
-        contentDescription = "Header Image",
-        modifier = Modifier.fillMaxWidth(),
-        contentScale = ContentScale.FillWidth
+    val infiniteTransition = rememberInfiniteTransition(label = "")
+    val colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f), Color.Transparent)
+    val animatedGradient by infiniteTransition.animateFloat(
+        initialValue = 0f,
+        targetValue = 1000f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(durationMillis = 5000, easing = LinearOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse
+        ), label = ""
     )
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        Image(
+            painter = painterResource(id = R.drawable.groupskaterkids),
+            contentDescription = "Header Image",
+            modifier = Modifier.fillMaxWidth(),
+            contentScale = ContentScale.FillWidth
+        )
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .background(Brush.horizontalGradient(colors, startX = animatedGradient, endX = animatedGradient + 500f))
+        )
+    }
 }
 
-
-// Composable function to display a single skateboarding tip card
 @Composable
 fun SkateboardingTipCard(skateboardingTip: SkateboardingTip) {
+    var expanded by remember { mutableStateOf(false) }
+
     Surface(
-        modifier = Modifier.fillMaxWidth(),
-        color = Color.DarkGray, // Change the background color here
-        shape = RoundedCornerShape(16.dp) // Increase corner radius for a sleek look
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { expanded = !expanded },
+        color = Color.Cyan,
+        shape = RoundedCornerShape(16.dp)
     ) {
         Card(
             modifier = Modifier.padding(8.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
         ) {
             Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally // Center align content
+                modifier = Modifier
+                    .padding(16.dp)
+                    .animateContentSize(),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                Text(
+                    text = "Day ${skateboardingTip.dayNumber}",
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.DarkGray,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
                 Text(
                     text = skateboardingTip.title,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black, // Use black color for title text
-                    modifier = Modifier.padding(bottom = 8.dp) // Add bottom padding to title
+                    color = Color.Black,
+                    modifier = Modifier.padding(bottom = if (expanded) 8.dp else 16.dp)
                 )
-                Text(
-                    text = skateboardingTip.description,
-                    fontSize = 16.sp,
-                    color = Color.DarkGray, // Use dark gray color for description text
-                    modifier = Modifier.padding(bottom = 16.dp) // Add bottom padding to description
-                )
+                if (expanded) {
+                    Text(
+                        text = skateboardingTip.description,
+                        fontSize = 16.sp,
+                        color = Color.DarkGray,
+                        modifier = Modifier.padding(bottom = 16.dp)
+                    )
+                }
                 Image(
                     painter = painterResource(id = skateboardingTip.imageUrl),
-                    contentDescription = null,
+                    contentDescription = "Skateboarding tip image",
                     modifier = Modifier
                         .fillMaxWidth()
-                        .height(350.dp), // Adjust image height for a sleeker appearance
+                        .height(350.dp)
+                        .padding(top = if (expanded) 8.dp else 0.dp),
                     contentScale = ContentScale.FillWidth
                 )
             }
@@ -198,22 +277,41 @@ fun SkateboardingTipCard(skateboardingTip: SkateboardingTip) {
     }
 }
 
-// Composable function to display a list of skateboarding tips
+@Preview(showBackground = true)
+@Composable
+fun PreviewSkateboardingTipCard() {
+    _10days_Theme {
+
+    }
+}
+
 @Composable
 fun SkateboardingTipsList(skateboardingTips: List<SkateboardingTip>) {
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
-        items(skateboardingTips) { tip ->
-            SkateboardingTipCard(skateboardingTip = tip)
+        itemsIndexed(skateboardingTips) { _, tip ->
+            val animatedVisibilityState = remember { mutableStateOf(false) }
+            LaunchedEffect(key1 = true) {
+                animatedVisibilityState.value = true
+            }
+            AnimatedVisibility(
+                visible = animatedVisibilityState.value,
+                enter = slideInVertically(
+                    initialOffsetY = { -100 }
+                ) + fadeIn() + scaleIn(initialScale = 0.99f),
+                exit = fadeOut()
+            ) {
+                SkateboardingTipCard(skateboardingTip = tip)
+            }
         }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun DefaultPreview() {
+fun Preview1() {
     _10days_Theme {
         SkateboardingTipsList(skateboardingTips)
     }
